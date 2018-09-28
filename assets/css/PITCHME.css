@@ -1,0 +1,24 @@
+h2, h3 {
+    color: #E49436 !important;
+}
+
+img {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.bio-tagline {
+    color: gray;
+    font-size: 0.8em !important;
+    font-style: italic !important;
+}
+
+.situation-details {
+    width: 50%;
+    font-size: 0.7em !important;
+    line-height: 1.5em !important;
+}
+  
+.architecture img {
+    height: 550px !important;
+}
