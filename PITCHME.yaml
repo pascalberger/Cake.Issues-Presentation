@@ -20,3 +20,5 @@ theme : black
 # Doc: https://gitpitch.com/docs/settings/custom-theme
 #
 theme-override : assets/css/PITCHME.css
+
+remote-control : true

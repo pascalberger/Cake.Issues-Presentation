@@ -94,7 +94,7 @@ Pull request reviews should focus on business issues
 
 ## Issue with extension #2
 
-* Using extensions doesn't scale to hundreds of pipelines
+* Having logic in pipelines doesn't scale to hundreds of pipelines
 * YML based pipelines help but you still have redundancy
 
 ---
@@ -102,7 +102,7 @@ Pull request reviews should focus on business issues
 ## Issue with extension #3
 
 * Never trust anything running code in your build pipeline
-* Auto update  is a huge security & reliability issue
+* Auto update is a huge security & reliability issue
 
 ---
 
