@@ -1,5 +1,7 @@
-# Cake.Issues-Presentation
+# Presentation of Cake.Issues
 
-Slide deck for presentation of [Cake.Issues](https://cake-contrib.github.io/Cake.Issues.Website)
+[![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/pascalberger/Cake.Issues-Presentation)
+
+Slide deck for presentation of [Cake.Issues](https://cake-contrib.github.io/Cake.Issues.Website).
 
 [View online](https://gitpitch.com/pascalberger/Cake.Issues-Presentation)
