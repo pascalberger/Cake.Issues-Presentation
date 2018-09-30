@@ -477,7 +477,7 @@ Note:
 
 * [SonarQube with Azure DevOps / TFS extension](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Extension+for+VSTS-TFS)
   * All languages supported by SonarQube with Azure DevOps / TFS
-* [MsBuildLog Octokit Checker](https://github.com/apps/msbuildlog-octokit-checker)
+* [Build Cross Check](https://github.com/apps/build-cross-check)
   * MsBuild binary logs with GitHub
 
 ---
