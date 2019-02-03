@@ -21,4 +21,13 @@ theme : black
 #
 theme-override : assets/css/PITCHME.css
 
+#
+# Twitter Card Settings
+# Doc: https://gitpitch.com/docs/settings/twitter-card
+#
+title : "Continuous Code Inspection using Cake"
+description : "An introduction to Cake.Issues by @hereispascal"
+
+footnote : "@hereispascal"
+
 remote-control : true
