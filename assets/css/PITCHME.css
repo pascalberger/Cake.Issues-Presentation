@@ -5,6 +5,7 @@ h2, h3 {
 img {
     border: none !important;
     box-shadow: none !important;
+    background: none !important;
 }
 
 .bio-tagline {

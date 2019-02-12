@@ -7,6 +7,7 @@ Slide deck for presentation of [Cake.Issues](https://cake-contrib.github.io/Cake
 Versions of this presentation:
 
 * [Current version](https://gitpitch.com/pascalberger/Cake.Issues-Presentation)
+* [.NET User Group Basel - 12th February 2019](https://gitpitch.com/pascalberger/Cake.Issues-Presentation/20190212-dotnet-usergroup-basel)
 * [Azure DevOps Saturday Gothenburg - 29th September 2018](https://gitpitch.com/pascalberger/Cake.Issues-Presentation/20180929-azure-devops-saturday-gothenburg)
 
 ## Running locally
