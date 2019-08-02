@@ -2,7 +2,7 @@
 
 [![GitPitch](https://gitpitch.com/assets/badge.svg)](https://gitpitch.com/pascalberger/Cake.Issues-Presentation)
 
-Slide deck for presentation of [Cake.Issues](https://cake-contrib.github.io/Cake.Issues.Website).
+Slide deck for presentation of [Cake.Issues](https://cakeissues.net).
 
 Versions of this presentation:
 

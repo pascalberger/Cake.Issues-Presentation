@@ -303,7 +303,7 @@ public static IEnumerable<IIssue> ReadIssues(
 * Over 10 addins providing more than 50 aliases
 * Extensible through custom addins
 * Open Source
-* https://cake-contrib.github.io/Cake.Issues.Website/
+* https://cakeissues.net
 
 ---
 
@@ -339,7 +339,7 @@ public static IEnumerable<IIssue> ReadIssues(
 
 Note:
 
-* Full feature list: https://cake-contrib.github.io/Cake.Issues.Website/docs/overview/features#cake.issues
+* Full feature list: https://cakeissues.net/docs/overview/features#cake.issues
 
 ---
 
@@ -533,7 +533,7 @@ Task("Break-Build")
 
 Note:
 
-* Full feature list: https://cake-contrib.github.io/Cake.Issues.Website/docs/overview/features#cake.issues.reporting
+* Full feature list: https://cakeissues.net/docs/overview/features#cake.issues.reporting
 
 ---
 
@@ -587,7 +587,7 @@ Note:
 
 * DevExtreme report as artifact
 * Custom build summary report
-* DevExtreme samples: https://cake-contrib.github.io/Cake.Issues.Website/docs/report-formats/generic/templates/htmldxdatagrid
+* DevExtreme samples: https://cakeissues.net/docs/report-formats/generic/templates/htmldxdatagrid
 
 ---
 
@@ -604,7 +604,7 @@ Note:
 
 Note:
 
-* Full feature list: https://cake-contrib.github.io/Cake.Issues.Website/docs/overview/features#cake.issues.pullrequests
+* Full feature list: https://cakeissues.net/docs/overview/features#cake.issues.pullrequests
 
 ---
   
@@ -707,10 +707,10 @@ Note:
 
 * AppVeyor messages: https://ci.appveyor.com/project/pascalberger/cake-issues-demo/build/1.0.1/messages
 * Code for AppVeyor integration: https://github.com/pascalberger/Cake.Issues-Demo/blob/master/build.cake#L114-L128
-* AppVeyor integration documentation: https://cake-contrib.github.io/Cake.Issues.Website/docs/pull-request-systems/appveyor/examples/write-messages
+* AppVeyor integration documentation: https://cakeissues.net/docs/pull-request-systems/appveyor/examples/write-messages
 * GitHub pull request comment: https://github.com/pascalberger/Cake.Issues-Demo/pull/3#issuecomment-425349657
 * Code for GitHub integration: https://github.com/pascalberger/Cake.Issues-Demo/blob/master/.appveyor.yml#L26-L31
-* GitHub integration documentation: https://cake-contrib.github.io/Cake.Issues.Website/docs/pull-request-systems/appveyor/examples/github-pullrequest-integration
+* GitHub integration documentation: https://cakeissues.net/docs/pull-request-systems/appveyor/examples/github-pullrequest-integration
 
 ---
 
@@ -724,7 +724,7 @@ Note:
 * Report issues as comments to pull requests.
 * Automatic resolving of issues fixed in subsequent commits.
 * Automatic reopening of still existing issues which are already closed on pull request.
-* Azure Pipelines/Repos integration documentation: https://cake-contrib.github.io/Cake.Issues.Website/docs/pull-request-systems/tfs/examples/azure-pipelines
+* Azure Pipelines/Repos integration documentation: https://cakeissues.net/docs/pull-request-systems/tfs/examples/azure-pipelines
 
 ---
 
@@ -741,7 +741,7 @@ Note:
 
 Note:
 
-* Supported tools: https://cake-contrib.github.io/Cake.Issues.Website/docs/recipe/supported-tools
+* Supported tools: https://cakeissues.net/docs/recipe/supported-tools
 
 ---
 
@@ -797,7 +797,7 @@ Note:
 
 * Documentation & Examples:
   
-  https://cake-contrib.github.io/Cake.Issues.Website
+  https://cakeissues.net
 * Source code:
   
   https://github.com/topics/cake-issues
