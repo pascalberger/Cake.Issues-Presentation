@@ -95,7 +95,7 @@ Fast feedback for developers
 Pull request reviews should focus on business issues
 
 ---
-  
+
 ![](assets/images/cake.issues.pullrequests.tfs.png)
 
 ---
@@ -347,9 +347,11 @@ Note:
 
 * MsBuild
 * InspectCode / ReSharper
+* DupFinder
 * ESLint
 * Markdownlint
 * DocFx
+* Git repository analysis
 
 ---
 
@@ -373,17 +375,13 @@ Task("Read-Issues")
     .IsDependentOn("Run-InspectCode")
     .Does(() =>
 {
-    var settings =
-        new ReadIssuesSettings(new DirectoryPath(@"C:\repo"))
-        {
-            Format = IssueCommentFormat.Markdown
-        };
+    var repoRootPath = new DirectoryPath(@"C:\repo");
+    var inspectCodeLogPath = @"C:\build\inspectcode.log";
 
     IEnumerable<IIssue> issues =
         ReadIssues(
-            InspectCodeIssuesFromFilePath(
-                @"C:\build\inspectcode.log"),
-            settings);
+            InspectCodeIssuesFromFilePath(inspectCodeLogPath),
+            repoRootPath);
 
     Information("{0} issues are found.", issues.Count());
 });
@@ -392,9 +390,9 @@ Task("Read-Issues")
 @[1](Add the core addin)
 @[2](Add specific issue provider implementation)
 @[4-7](Add task for reading issues. Run-InspectCode is a task running InspectCode analysis)
-@[8-12](Define settings for reading issues)
-@[14-18](Read issues)
-@[20](Output number of issues found)
+@[8-9](Define variables for files and directories)
+@[11-14](Read issues)
+@[16](Output number of issues found)
 
 ---
 
@@ -413,7 +411,11 @@ public interface IIssue
 
     int? Line { get; }
 
-    string Message { get; }
+    string MessageText { get; }
+
+    string MessageMarkdown { get; }
+
+    string MessageHtml { get; }
 
     int? Priority { get; }
 
@@ -432,10 +434,10 @@ public interface IIssue
 @[3-5](Project information)
 @[7](File information)
 @[9](Line information)
-@[11](Message)
-@[13-15](Issue priority)
-@[17-19](Rule information)
-@[21-23](Provider information)
+@[11-15](Message in different formats)
+@[17-19](Issue priority)
+@[21-23](Rule information)
+@[25-27](Provider information)
 
 ---
 
@@ -460,6 +462,7 @@ Setup<BuildData>(context =>
     return new BuildData();
 });
 ```
+
 @[1-10](Add typed context class for holding build state. This is a standard C# class.)
 @[12-15](Setup typed context)
 
@@ -470,17 +473,13 @@ Setup<BuildData>(context =>
 ```csharp
 Task("Read-Issues").Does<BuildData>(data =>
 {
-    var settings =
-        new ReadIssuesSettings(new DirectoryPath(@"C:\repo"))
-        {
-            Format = IssueCommentFormat.Markdown
-        };
+    var repoRootPath = new DirectoryPath(@"C:\repo");
+    var inspectCodeLogPath = @"C:\build\inspectcode.log";
 
     IEnumerable<IIssue> issues =
         ReadIssues(
-            InspectCodeIssuesFromFilePath(
-                @"C:\build\inspectcode.log"),
-            settings);
+            InspectCodeIssuesFromFilePath(inspectCodeLogPath),
+            repoRootPath);
 
     Information("{0} issues are found.", issues.Count());
 
@@ -489,7 +488,7 @@ Task("Read-Issues").Does<BuildData>(data =>
 ```
 
 @[1](Pass typed context to Read-Issues task)
-@[17](Save issues in typed context)
+@[13](Save issues in typed context)
 
 ---
 
@@ -525,7 +524,7 @@ Task("Break-Build")
 ## Creating reports
 
 ---
-  
+
 ### Report formats
 
 * Responsible for creating reports
@@ -542,6 +541,7 @@ Note:
 * Generic format using Razor templates
   * Out of the box templates (e.g. DevExtreme)
   * Support for custom templates
+* SARIF compatible report
 
 ---
 
@@ -594,7 +594,7 @@ Note:
 ## Integration in pull request workflow
 
 ---
-  
+
 ### Pull request & build systems
 
 * Responsible for communicating with pull request or build systems
@@ -607,11 +607,11 @@ Note:
 * Full feature list: https://cakeissues.net/docs/overview/features#cake.issues.pullrequests
 
 ---
-  
+
 ### Available pull request & build systems
 
 * AppVeyor
-* Team Foundation Server / Azure DevOps
+* Azure DevOps
 
 ---
 
@@ -647,18 +647,18 @@ Task("Report-IssuesToPullRequest")
 ### How to set state on Azure DevOps pull request
 
 ```csharp
-#addin "Cake.Tfs"
+#addin "Cake.AzureDevOps"
 
 Task("Set-AzureDevOpsPullRequestState")
     .IsDependentOn("Read-Issues")
     .Does<BuildData>(data =>
 {
-    TfsPullRequestStatusState state
+    AzureDevOpsPullRequestStatusState state
     string description;
 
     if (data.Issues.Any())
     {
-        state = TfsPullRequestStatusState.Error;
+        state = AzureDevOpsPullRequestStatusState.Error;
         description =
             string.Format(
                 "{0} issues found.",
@@ -666,12 +666,12 @@ Task("Set-AzureDevOpsPullRequestState")
     }
     else
     {
-        state = TfsPullRequestStatusState.Succeeded;
+        state = AzureDevOpsPullRequestStatusState.Succeeded;
         description = "No issues found."
     }
 
     var pullRequstStatus =
-        new TfsPullRequestStatus("Issues")
+        new AzureDevOpsPullRequestStatus("Issues")
         {
             Genre = "MyBuildScript",
             State = state,
@@ -679,12 +679,12 @@ Task("Set-AzureDevOpsPullRequestState")
     }
 
     var pullRequestSettings =
-        new TfsPullRequestSettings(
+        new AzureDevOpsPullRequestSettings(
             new Uri("http://myserver:8080/tfs/defaultcollection/myproject/_git/myrepository"),
             "refs/heads/feature/myfeature",
-            TfsAuthenticationNtlm());
+            AzureDevOpsAuthenticationNtlm());
 
-    TfsSetPullRequestStatus(
+    AzureDevOpsSetPullRequestStatus(
         pullRequestSettings,
         pullRequstStatus);
 });
@@ -736,8 +736,9 @@ Note:
 
 * Pre-made build script for integrating into projects
 * Distributed as NuGet package
-* Support for MsBuild & InspectCode
-* Support for Azure Pipelines & Azure Repos
+* Support for MsBuild & InspectCode log files
+* Support for Azure Pipelines & AppVeyor
+* Support for Azure Repos
 
 Note:
 
@@ -796,13 +797,13 @@ Note:
 ## Resources
 
 * Documentation & Examples:
-  
+
   https://cakeissues.net
 * Source code:
-  
+
   https://github.com/topics/cake-issues
 * Reach out:
-  
+
   @fa[twitter pad-fa] @hereispascal<br/>
   @fa[github pad-fa] github.com/pascalberger<br/>
   @fa[envelope pad-fa] pascal@cakebuild.net
