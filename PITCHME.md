@@ -300,7 +300,7 @@ public static IEnumerable<IIssue> ReadIssues(
 
 ### Cake.Issues features
 
-* Over 10 addins providing more than 50 aliases
+* Over 10 addins providing more than 75 aliases
 * Extensible through custom addins
 * Open Source
 * https://cakeissues.net
@@ -403,6 +403,8 @@ Abstraction over different issue providers
 ```csharp
 public interface IIssue
 {
+    string Identifier { get; }
+
     FilePath ProjectFileRelativePath { get; }
 
     string ProjectName { get; }
@@ -410,6 +412,14 @@ public interface IIssue
     FilePath AffectedFileRelativePath { get; }
 
     int? Line { get; }
+
+    int? EndLine { get; }
+
+    int? Column { get; }
+
+    int? EndColumn { get; }
+
+    Uri FileLink { get; }
 
     string MessageText { get; }
 
@@ -425,19 +435,24 @@ public interface IIssue
 
     Uri RuleUrl { get; }
 
+    string Run { get; }
+
     string ProviderType { get; }
 
     string ProviderName { get; }
 }
 ```
 
-@[3-5](Project information)
-@[7](File information)
-@[9](Line information)
-@[11-15](Message in different formats)
-@[17-19](Issue priority)
-@[21-23](Rule information)
-@[25-27](Provider information)
+@[3](Identifier of issue)
+@[5-7](Project information)
+@[9](File information)
+@[11-17](Line & column information)
+@[19](Link to file on source code hosting platform)
+@[21-25](Message in different formats)
+@[27-29](Issue priority)
+@[31-33](Rule information)
+@[35](Run information)
+@[37-39](Provider information)
 
 ---
 
@@ -736,7 +751,7 @@ Note:
 
 * Pre-made build script for integrating into projects
 * Distributed as NuGet package
-* Support for MsBuild & InspectCode log files
+* Support for MsBuild, InspectCode, DupFinder & Markdownlint log files
 * Support for Azure Pipelines & AppVeyor
 * Support for Azure Repos
 
