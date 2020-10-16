@@ -627,6 +627,7 @@ Note:
 
 * AppVeyor
 * Azure DevOps
+* GitHub Actions
 
 ---
 
@@ -752,7 +753,7 @@ Note:
 * Pre-made build script for integrating into projects
 * Distributed as NuGet package
 * Support for MsBuild, InspectCode, DupFinder & Markdownlint log files
-* Support for Azure Pipelines & AppVeyor
+* Support for Azure Pipelines, GitHub Actions & AppVeyor
 * Support for Azure Repos
 
 Note:
