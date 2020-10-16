@@ -3,7 +3,7 @@
 ### _An introduction to Cake.Issues_
 
 @snap[south]
-@css[bio-tagline](Pascal Berger, BBT Software AG)
+@css[bio-tagline](Pascal Berger)
 <br>
 @fa[twitter pad-fa bio-tagline] @css[bio-tagline](@hereispascal)
 @snapend
@@ -12,11 +12,9 @@
 
 ## About me
 
-Software Architect at BBT Software AG<br/>
 Microsoft MVP<br/>
 Open Source Maintainer<br/>
 
-![](assets/images/bbt.png)
 ![](assets/images/mvp.png)
 ![](assets/images/cake-small.png)
 
