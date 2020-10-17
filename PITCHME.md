@@ -32,13 +32,13 @@ Open Source Maintainer<br/>
 
 @snap[east span-45]
 @ol[split-screen-list text-08](false)
-* Continuous Inspection
-* Introduction to Cake
-* Overview of Cake.Issues
-* Reading issues
-* Creating reports
-* Integration in pull request workflow
-* Recipe script
+* [Continuous Inspection](#/3)
+* [Introduction to Cake](#/11)
+* [Overview of Cake.Issues](#/23)
+* [Reading issues](#/27)
+* [Creating reports](#/36)
+* [Integration in pull request workflow](#/41)
+* [Recipe script](#/48)
 @olend
 @snapend
 
