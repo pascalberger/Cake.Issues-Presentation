@@ -290,7 +290,7 @@ public static IEnumerable<IIssue> ReadIssues(
 ### Cake.Issues features
 
 * Issue Management for the Cake Build System
-* Read issues from different linters
+* Read issues from different linters and tools
 * Create reports
 * Report issues to pull requests and build systems
 
@@ -298,7 +298,7 @@ public static IEnumerable<IIssue> ReadIssues(
 
 ### Cake.Issues features
 
-* Over 10 addins providing more than 75 aliases
+* Over 15 addins providing more than 75 aliases
 * Extensible through custom addins
 * Open Source
 * https://cakeissues.net
@@ -348,6 +348,7 @@ Note:
 * DupFinder
 * ESLint
 * Markdownlint
+* Terraform
 * DocFx
 * Git repository analysis
 
