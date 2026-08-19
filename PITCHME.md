@@ -36,9 +36,10 @@ Open Source Maintainer<br/>
 * [Introduction to Cake](#/11)
 * [Overview of Cake.Issues](#/23)
 * [Reading issues](#/27)
-* [Creating reports](#/36)
-* [Integration in pull request workflow](#/41)
-* [Recipe script](#/48)
+* [Creating reports](#/37)
+* [Integration with build servers](#/42)
+* [Integration in pull request workflow](#/47)
+* [Recipe script](#/53)
 @olend
 @snapend
 
@@ -141,8 +142,8 @@ Pull request reviews should focus on business issues
 * Everything you can do with .NET you can do in Cake
 * Cross-Plattform
   * Windows, Linux, macOS, Docker
-* Cross-Framework
-  * Runs on .NET Framework 4.6.1, Mono 4.4.2 and .NET Core 2.1
+* Support for different runners
+  * Cake Scripting, Cake Frosting, Cake SDK
 * Cross-Environment
   * Out of the box support for different build servers
 * Out of the box support for a lot of tools
@@ -253,16 +254,31 @@ RunTarget(target);
 
 * Addins can extend DSL by providing additional aliases
 * Distributed as NuGet packages
-* Over 250 open source addins available
-* https://cakebuild.net/addins/
+* Over 300 open source addins available
+* https://cakebuild.net/extensions/
 
 ---
 
 ### Using addins
 
+Cake SDK:
+
 ```csharp
-#addin nuget:?package=Cake.Issues&version=x.y
+#:package Cake.Issues@x.y.z
 ```
+
+Cake Frosting:
+
+```csharp
+<PackageReference Include="Cake.Issues" Version="x.y.z" />
+```
+
+Cake Scripting:
+
+```csharp
+#addin nuget:?package=Cake.Issues&version=x.y.z
+```
+
 
 * Always pin to a specific version to have deterministic builds
 * Make sure you trust the addins which you're using
@@ -305,23 +321,9 @@ public static IEnumerable<IIssue> ReadIssues(
 
 ---
 
-@snap[north]
-
 <h3>Architecture<h3>
 
-@snapend
-
-@snap[south architecture fragment]
-![](assets/images/architecture1.png)
-@snapend
-
-@snap[south-west architecture fragment]
-![](assets/images/architecture2.png)
-@snapend
-
-@snap[south-east architecture fragment]
-![](assets/images/architecture3.png)
-@snapend
+![](assets/images/architecture.png)
 
 ---
 
@@ -341,34 +343,44 @@ Note:
 
 ---
 
-### Available issue providers
+### Use cases
 
-* MsBuild
-* InspectCode / ReSharper
-* DupFinder
-* ESLint
-* Markdownlint
-* Terraform
-* DocFx
-* Git repository analysis
+* Report linting issues
+* Report duplicated code
+* Report security vulnerabilities
+* Report available dependency updates
+* Any issue which you determine in your build script can be reported
 
 ---
 
-### Possible other issue providers
+### Available issue providers
 
-* Web linters (StyleLint, TSLint, WebHint, ...)
-* Docker file linting
-* Report security vulnerabilities
-* Report NuGet package updates
-* Any issue which you determine in your build script can be reported
+* Support for standard formats
+  * SARIF
+  * TAP
+* Support for tool specific outputs
+  * MsBuild
+  * ESLint
+  * Markdownlint
+  * Terraform
+  * DocFx
+  * Git repository analysis
+
+---
+
+### Supported tools
+
+.NET, Ansible, Amazon Cloud Formation Templates, Azure Resource Manager, Bicep, Clojure, Copy/Paste Detection, CSS / SCSS / Sass, Dockerfile, GitHub Actions, Go, Groovy, Helm charts, Java, JavaScript, JSON, JSX / TSX, Kotlin, Kubernetes, Markdown, Natural Language, OpenAPI, PHP, Protobuf, Python, Secrets, Terraform, TypeScript, ...
+
+_Plus anything which can provide SARIF / TAP output_
 
 ---
 
 ### How to parse linting output
 
 ```csharp
-#addin "Cake.Issues"
-#addin "Cake.Issues.InspectCode"
+#:package Cake.Issues@6.0.0
+#:package Cake.Issues.InspectCode@6.0.0
 
 Task("Read-Issues")
     .IsDependentOn("Run-InspectCode")
@@ -430,7 +442,9 @@ public interface IIssue
 
     string PriorityName { get; }
 
-    string Rule { get; }
+    string RuleId { get; }
+
+    string RuleName { get; }
 
     Uri RuleUrl { get; }
 
@@ -439,6 +453,12 @@ public interface IIssue
     string ProviderType { get; }
 
     string ProviderName { get; }
+
+    IReadOnlyDictionary<string, string> AdditionalInformation { get; }
+
+    string Snippet { get; }
+
+    string SourceLanguage { get; }
 }
 ```
 
@@ -449,9 +469,11 @@ public interface IIssue
 @[19](Link to file on source code hosting platform)
 @[21-25](Message in different formats)
 @[27-29](Issue priority)
-@[31-33](Rule information)
-@[35](Run information)
-@[37-39](Provider information)
+@[31-35](Rule information)
+@[37](Run information)
+@[39-41](Information about issue provider which created the issue)
+@[43](Dictionary with issue provider specific additional information)
+@[45-47](Source code snippet and language of the file where the issue occurred)
 
 ---
 
@@ -517,21 +539,13 @@ Task("Break-Build")
         data.Issues.Where(
             x => x.Priority == IssuePriority.Error);
 
-    if (errors.Any())
-    {
-        throw new Exception(
-            string.Format(
-                "Found {0} errors while analyzing solution",
-                errors.Count()
-            )
-        )
-    }
+    BreakBuildOnIssues(errors);
 });
 ```
 
-@[1-4](Add task for creating report)
+@[1-4](Add task for breaking build)
 @[5-7](Determine issues which are errors)
-@[9-17](Throw exception to stop build script)
+@[9](Throw exception to stop build script)
 
 ---
 
@@ -562,8 +576,8 @@ Note:
 ### How to create report
 
 ```csharp
-#addin "Cake.Issues.Reporting"
-#addin "Cake.Issues.Reporting.Generic"
+#:package Cake.Issues.Reporting@6.0.0
+#:package Cake.Issues.Reporting.Generic@6.0.0
 
 Task("Create-Report")
     .IsDependentOn("Read-Issues")
@@ -593,7 +607,7 @@ Task("Create-Report")
 
 ---
 
-### Demo integration in Azure Pipelines
+### Demo HTML report
 
 https://dev.azure.com/pberger/Cake.Issues-Demo
 
@@ -601,42 +615,40 @@ Note:
 
 * DevExtreme report as artifact
 * Custom build summary report
-* DevExtreme samples: https://cakeissues.net/docs/report-formats/generic/templates/htmldxdatagrid
+* DevExtreme samples: https://cakeissues.net/latest/documentation/report-formats/generic/templates/htmldxdatagrid/
 
 ---
 
-## Integration in pull request workflow
+## Integration with build servers
 
 ---
 
-### Pull request & build systems
+### Build system implementations
 
-* Responsible for communicating with pull request or build systems
+* Responsible for communicating with build servers
 * Filter to relevant issues
-* Auto-reopen or resolve comment threads
-* Specific pull request systems separated from core logic
+* Specific build system implementations separated from core logic
 
 Note:
 
-* Full feature list: https://cakeissues.net/docs/overview/features#cake.issues.pullrequests
+* Full feature list: https://cakeissues.net/latest/documentation/features/#build-pull-request-system-integration
 
 ---
 
-### Available pull request & build systems
+### Available build system implementations
 
 * AppVeyor
-* Azure DevOps
 * GitHub Actions
 
 ---
 
-### How to write issues to pull request or build system
+### How to report issues to a build
 
 ```csharp
-#addin "Cake.Issues.PullRequests"
-#addin "Cake.Issues.PullRequests.AppVeyor"
+#:package Cake.Issues.BuildServer@6.0.0
+#:package Cake.Issues.BuildServer.AppVeyor@6.0.0
 
-Task("Report-IssuesToPullRequest")
+Task("Report-IssuesToBuildServer")
     .IsDependentOn("Read-Issues")
     .WithCriteria(() => AppVeyor.IsRunningOnAppVeyor)
     .Does<BuildData>(data =>
@@ -645,24 +657,96 @@ Task("Report-IssuesToPullRequest")
         new AppVeyorBuildSettings();
 
     var repoRootFolder = new DirectoryPath(@"C:\repo");
-    ReportIssuesToPullRequest(
+    ReportIssuesToBuildServer(
         data.Issues,
         AppVeyorBuilds(appVeyorSettings),
         repoRootFolder);
 });
 ```
 
-@[1-2](Add pull request support and specific pull request or build server implementation)
-@[4-8](Add task for writing issues to pull request or build system)
-@[9-10](Define settings for writing issues to pull request or build system)
-@[12-16](Write issues to pull request or build system. Writes issues as messages to AppVeyor build.)
+@[1-2](Add build server support and specific build server implementation)
+@[4-8](Add task for reporting issues to build server)
+@[9-10](Define settings for reporting issues to build server)
+@[12-16](Report issues to build server. Writes issues as messages to AppVeyor build.)
+
+---
+
+### Demo integration in AppVeyor
+
+https://github.com/pascalberger/Cake.Issues-Demo
+
+Note:
+
+* AppVeyor messages: https://ci.appveyor.com/project/pascalberger/cake-issues-demo/build/1.0.1/messages
+* Code for AppVeyor integration: https://github.com/pascalberger/Cake.Issues-Demo/blob/master/build.cake#L114-L128
+* AppVeyor integration documentation: https://cakeissues.net/docs/pull-request-systems/appveyor/examples/write-messages
+* GitHub pull request comment: https://github.com/pascalberger/Cake.Issues-Demo/pull/3#issuecomment-425349657
+* Code for GitHub integration: https://github.com/pascalberger/Cake.Issues-Demo/blob/master/.appveyor.yml#L26-L31
+* GitHub integration documentation: https://cakeissues.net/docs/pull-request-systems/appveyor/examples/github-pullrequest-integration
+
+---
+
+## Integration in pull request workflow
+
+---
+
+### Pull request system
+
+* Responsible for communicating with pull request
+* Filter to relevant issues
+* Auto-reopen or resolve comment threads
+* Specific pull request systems separated from core logic
+
+Note:
+
+* Full feature list: https://cakeissues.net/latest/documentation/features/#build-pull-request-system-integration
+
+---
+
+### Available pull request systems
+
+* Azure DevOps
+
+---
+
+### How to write issues to pull request
+
+```csharp
+#:package Cake.Issues.PullRequests@6.0.0
+#:package Cake.Issues.PullRequests.AzureDevOps@6.0.0
+
+Task("Report-IssuesToPullRequest")
+    .IsDependentOn("Read-Issues")
+    .WithCriteria(() => AppVeyor.IsRunningOnAzureDevOps)
+    .Does<BuildData>(data =>
+{
+    var currentBranch =
+        GitBranchCurrent(repoRootPath);
+    var repoRemoteUrl =
+        new Uri(currentBranch.Remotes.Single(x => x.Name == "origin").Url);
+    var pullRequestId = 123;
+
+    ReportIssuesToPullRequest(
+        data.Issues,
+        AzureDevOpsPullRequests(
+            repoRemoteUrl,
+            pullRequestId,
+            AzureDevOpsAuthenticationNtlm()),
+        repoRootPath);
+});
+```
+
+@[1-2](Add pull request support and specific pull request implementation)
+@[4-8](Add task for writing issues to pull request)
+@[9-13](Define parameters for writing issues to pull request)
+@[15-21](Writes issues to pull request on Azure DevOps Server.)
 
 ---
 
 ### How to set state on Azure DevOps pull request
 
 ```csharp
-#addin "Cake.AzureDevOps"
+#:package Cake.AzureDevOps
 
 Task("Set-AzureDevOpsPullRequestState")
     .IsDependentOn("Read-Issues")
@@ -714,21 +798,6 @@ Task("Set-AzureDevOpsPullRequestState")
 
 ---
 
-### Demo integration in AppVeyor
-
-https://github.com/pascalberger/Cake.Issues-Demo
-
-Note:
-
-* AppVeyor messages: https://ci.appveyor.com/project/pascalberger/cake-issues-demo/build/1.0.1/messages
-* Code for AppVeyor integration: https://github.com/pascalberger/Cake.Issues-Demo/blob/master/build.cake#L114-L128
-* AppVeyor integration documentation: https://cakeissues.net/docs/pull-request-systems/appveyor/examples/write-messages
-* GitHub pull request comment: https://github.com/pascalberger/Cake.Issues-Demo/pull/3#issuecomment-425349657
-* Code for GitHub integration: https://github.com/pascalberger/Cake.Issues-Demo/blob/master/.appveyor.yml#L26-L31
-* GitHub integration documentation: https://cakeissues.net/docs/pull-request-systems/appveyor/examples/github-pullrequest-integration
-
----
-
 ### Demo integration with Azure Repos
 
 https://dev.azure.com/pberger/Cake.Issues-Demo
@@ -751,13 +820,13 @@ Note:
 
 * Pre-made build script for integrating into projects
 * Distributed as NuGet package
-* Support for MsBuild, InspectCode, DupFinder & Markdownlint log files
+* Support for SARIF, MsBuild, InspectCode, Markdownlint, ESLint log files
 * Support for Azure Pipelines, GitHub Actions & AppVeyor
 * Support for Azure Repos
 
 Note:
 
-* Supported tools: https://cakeissues.net/docs/recipe/supported-tools
+* Supported tools: https://cakeissues.net/latest/documentation/recipe/supported-tools/
 
 ---
 
@@ -766,7 +835,7 @@ Note:
 ```csharp
 #load nuget:package=Cake.Issues.Recipe
 
-// Run issues task by default.
+// Configures Cake.Issues.Recipe.
 Task("Configure-CakeIssuesRecipe")
     .IsDependentOn("Build")
     .IsDependentOn("Run-InspectCode")
@@ -816,7 +885,7 @@ Note:
   https://cakeissues.net
 * Source code:
 
-  https://github.com/topics/cake-issues
+  https://github.com/cake-contrib/Cake.Issues
 * Reach out:
 
   @fa[twitter pad-fa] @hereispascal<br/>

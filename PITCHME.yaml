@@ -14,6 +14,7 @@ published : true
 # Doc: https://gitpitch.com/docs/settings/theme
 #
 theme : black
+theme-text      : [ "Ubuntu", "#000", "none", "#222222", "100", "110", "15" ]
 
 #
 # Theme-Override Setting
